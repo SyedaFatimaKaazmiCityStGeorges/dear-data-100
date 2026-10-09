@@ -1,1 +1,12 @@
+observation,date,map,agent,result,kills,deaths,musicPlaying,musicGenre,musicEnergy,moodBefore,moodAfter,genderVisible,interaction,socialExperience
+1,2026-10-09,Haven,Reyna,Win,2,1,Yes,R&B,2,3,4,Yes,Neutral,3
+2,2026-10-09,Haven,Reyna,Loss,0,1,Yes,R&B,4,4,3,No,None,3
+3,2026-10-09,Haven,Reyna,Win,1,0,Yes,R&B,3,3,4,Yes,None,3
+4,2026-10-09,Haven,Reyna,Win,1,1,Yes,R&B,3,4,5,Yes,Positive,5
+5,2026-10-09,Haven,Reyna,Loss,1,1,Yes,R&B,3,5,4,No,None,3
+6,2026-10-09,Haven,Reyna,Win,1,0,No,None,0,4,5,Yes,Positive,5
+7,2026-10-09,Haven,Reyna,Loss,2,1,Yes,Pop,2,5,4,Yes,None,3
+8,2026-10-09,Haven,Reyna,Win,1,1,Yes,Pop,2,4,5,No,Neutral,3
+9,2026-10-09,Haven,Reyna,Loss,3,0,Yes,Pop,3,5,4,Yes,None,3
+10,2026-10-09,Haven,Reyna,Loss,0,0,Yes,Pop,4,4,3,No,None,3
 
