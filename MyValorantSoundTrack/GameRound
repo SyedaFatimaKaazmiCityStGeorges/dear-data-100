@@ -1,1 +1,143 @@
+// For every GameRound, it equals one row of collected data.
+// Creating a class means creating the blueprint for making objects
 
+class GameRound {
+  int observation;
+  String date;
+  String mapName;
+  String agent;
+  String result;
+  int kills;
+  int deaths;
+  boolean musicPlaying;
+  String musicGenre;
+  int musicEnergy;
+  int moodBefore;
+  int moodAfter;
+  boolean genderVisible;
+  String interaction;
+  int socialExperience;
+  int index;
+  float x, y;
+
+  GameRound(TableRow, row, int position) { // Reads one CSV row valorant data excel sheet information 
+  index = position;          //saves zerobased position
+  observation = row.getInt("observation");   
+  date = row.getString("date");
+  mapName = row.getString("map");
+  agent = row.getString("agent");
+  result = row.getString("result");
+  kills = row.getString("kills");
+  deaths = row.getString("deaths");
+  musicPlaying = row.getString("musicPlaying");
+  musicGenre = row.getString("musicGenre");
+  musicEnergy = row.getString("musicEnergy");
+  moodBefore = row.getString("moodBefore");
+  moodAfter = row.getString("moodAfter");
+  genderVisible = row.getString("genderVisible");
+  interaction = row.getString("interaction");
+  socialExperience = row.getString("socialExperience");
+  }
+
+  boolean won(){  // Checks if round was won or not
+    return result.equalsIgnoreCase("Win") || result.equalsIgnoreCase("W");
+  }
+
+  int moodChange(){  // Checks if mood change was positive, negative or no change
+    return moodAfter - moodBefore;
+  }
+
+  color agentColour(){
+    if (agent.equalsIgnoreCase("Reyna")) return color(247, 82, 163); // Pink
+    if (agent.equalsIgnoreCase("Sage")) return color(87, 225, 178); // Mint
+    if (agent.equalsIgnoreCase("Raze")) return color(255, 171, 80); // Orange
+    if (agent.equalsIgnoreCase("Miks")) return color(115, 176, 255); // Blue
+    if (agent.equalsIgnoreCase("Gekko")) return color(187, 138, 255); // Purple
+  }
+
+  color moodColour(){
+    if (moodChange() > 0) return color(105, 239, 176); // Mood +
+    if (moodChange() < 0) return color(255, 119, 149); // Mood -
+    return color(219, 223, 237);   // Mood ==
+  }
+
+  String socialSymbol(){
+    if (interaction.equalsIgnoreCase("Positive")) return "+";
+    if (interaction.equalsIgnoreCase("Negative")) return "-";
+    if (interaction.equalsIgnoreCase("Neutral")) return "=";
+    return "·";
+  }
+
+  int flower() { return index/20; }
+  int layer() { return index%20)/10; }
+  float petalAngle() {
+    return -HALF_PI+TWO_PI*((index%10)+layer()*0.5)/10.0;
+  }
+
+  float petalX() { 
+    return gardenX(flower())+cos(petalAngle())*(layer()==0 ? 43 : 88); 
+  }
+  float petalY() { 
+    return gardenY(flower())+sin(petalAngle())*(layer()==0 ? 43 : 88); 
+  }
+  float petalWidth() { 
+    return new float[]{22,25,16,27,23}[flower()]; 
+  }
+
+  // Each silhouette made by curves with internested shadings that have a lot of translucency
+  void silhouette(float scale){
+    float w=petalWidth()*scale, h=39*scale;
+    beginShape(); vertex(0, -h);
+    if(flower()==1 || flower()==3) {
+      bezierVertex(w,-h,w,h*0.55,0,h);
+      bezierVertex(-w,h*0.55,-w,-h,0,-h);
+    } else {
+      bezierVertex(w*0.35,-h*0.55,w,h*0.35,0,h);
+      bezierVertex(-w,h*0.35,-w*0.35,-h*0.55,0,-h);
+    }
+    endShape(CLOSE);
+  }
+  void displayPetal(boolean selected) {
+    pushMatrix(); 
+    translate(petalX(),petalY()); 
+    rotate(petalAngle()+HALF_PI);
+    
+    // Offset shadow; agent hue stays consistent despite decorative modelling.
+    translate(2,3); 
+    noStroke(); 
+    fill(0,75); 
+    silhouette(1.04); 
+
+    translate(-2,-3);
+    fill(lerpColor(agentColour(),color(22,26,47),0.30));
+    stroke(moodColour()); 
+    strokeWeight(selected ? 3.5 : 1.6); 
+    silhouette(1);
+    noStroke();
+
+    for(int j=18;j>0;j--) {
+      float t=j/18.0;
+      fill(lerpColor(agentColour(),color(255,235,222),0.34*(1-t)),35);
+      silhouette(0.30+0.64*t);
+    }
+
+    // Delicate curved veins and rim highlights: decorative, never extra data.
+    noFill(); stroke(255,215,236,60); strokeWeight(0.65);
+    for(int v=-2;v<=2;v++) {
+      bezier(0,29,v*4,12,v*6,-12,v*3,-29);
+    }
+    stroke(255,245,230,110); line(-2,-27,-1,-8);
+    if(won()) { noStroke(); fill(255,222,102); ellipse(0,-20,7,7); }
+    else { stroke(240); strokeWeight(1.4); line(-3,-23,3,-17); line(-3,-17,3,-23); }
+    noStroke(); fill(255);
+    for(int k=0;k<kills;k++) ellipse((k-(kills-1)/2.0)*4,6,2.8,2.8);
+    if(genderVisible) { fill(255,191,97); triangle(-3,25,3,25,0,30); }
+    popMatrix();
+  }
+
+  boolean contains(float px,float py) {
+    float a=petalAngle()+HALF_PI, dx=px-petalX(),dy=py-petalY();
+    float lx=dx*cos(a)+dy*sin(a),ly=-dx*sin(a)+dy*cos(a);
+    return sq(lx/(petalWidth()*0.75))+sq(ly/39.0)<1;
+  }
+}
