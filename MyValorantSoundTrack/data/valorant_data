@@ -12,3 +12,7 @@ observation,date,map,agent,result,kills,deaths,musicPlaying,musicGenre,musicEner
 11,2026-10-08,Haven,Reyna,Win,2,0,Yes,Indie,3,3,4,Yes,Neutral,3
 12,2026-10-08,Haven,Reyna,Loss,0,1,No,None,0,4,3,No,Neutral,3
 13,2026-10-08,Haven,Reyna,Win,1,0,Yes,Indie,4,3,4,No,None,3
+14,2026-10-08,Haven,Reyna,Loss,0,1,No,None,0,4,3,No,None,3
+15,2026-10-08,Haven,Reyna,Win,0,0,Yes,Indie,3,3,4,No,None,3
+16,2026-10-08,Haven,Reyna,Win,2,1,Yes,Pop,2,4,5,No,Positive,5
+17,2026-10-08,Haven,Reyna,Loss,2,1,No,None,0,5,4,Yes,None,3
