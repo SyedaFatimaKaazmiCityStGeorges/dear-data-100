@@ -1,1 +1,182 @@
+## Dear Data Snowflake design ##
+Table rounds;
+int currentRound = 0;
+int winCount = 0;
+float averageMoodChange = 0;
+String errorMessage = "";
 
+void settings() {
+  size(1100, 700);
+}
+
+void setup() {
+  surface.setTitle("Dear Data 100 | Valorant Round Log");
+  textFont(createFont("SansSerif", 16));
+  loadObservations();
+}
+
+void loadObservations() {
+  // Put the file inside this sketch's data folder.
+  rounds = loadTable("valorant_rounds_001-100.csv", "header");
+
+  if (rounds == null || rounds.getRowCount() == 0) {
+    errorMessage = "Could not load the CSV in the data folder.";
+    return;
+  }
+
+  winCount = countWins(rounds);
+  averageMoodChange = calculateAverageMoodChange(rounds);
+}
+
+// A METHOD THAT RETURNS AN INTEGER.
+// It accepts a Table, counts its winning rows, then returns the answer.
+int countWins(Table source) {
+  int total = 0;
+
+  for (TableRow row : source.rows()) {
+    if (row.getString("result").equalsIgnoreCase("Win")) {
+      total++;
+    }
+  }
+
+  return total;
+}
+
+// A METHOD THAT RETURNS A FLOAT.
+float calculateAverageMoodChange(Table source) {
+  float totalChange = 0;
+
+  for (TableRow row : source.rows()) {
+    totalChange += row.getInt("moodAfter") - row.getInt("moodBefore");
+  }
+
+  return totalChange / source.getRowCount();
+}
+
+// A METHOD THAT RETURNS A COLOUR.
+color colourForResult(String result) {
+  if (result.equalsIgnoreCase("Win")) {
+    return color(111, 220, 195);
+  }
+  return color(255, 170, 180);
+}
+
+void draw() {
+  background(12, 29, 50);
+
+  // Background stars; purely decorative and repeatable across frames.
+  randomSeed(100);
+  noStroke();
+  for (int i = 0; i < 95; i++) {
+    fill(188, 220, 242, random(60, 190));
+    circle(random(width), random(height), random(1.2, 3));
+  }
+
+  fill(236, 248, 255);
+  textSize(32);
+  text("Dear Data 100  /  Valorant Round Log", 48, 65);
+  fill(159, 202, 225);
+  textSize(16);
+  text("PART 1: DATA COLLECTION + FIRST VISUAL IDEA", 49, 97);
+
+  if (!errorMessage.equals("")) {
+    fill(255, 179, 182);
+    text(errorMessage, 48, 160);
+    return;
+  }
+
+  // Three easy-to-read summary numbers.
+  drawStat("ROUNDS COLLECTED", str(rounds.getRowCount()), 48);
+  drawStat("WINS", str(winCount), 355);
+  drawStat("AVERAGE MOOD CHANGE", nf(averageMoodChange, 1, 2), 662);
+
+  // Snowflake = a first concept, not the final assessed visualisation.
+  pushMatrix();
+  translate(300, 430);
+  drawSnowflake(currentRound);
+  popMatrix();
+
+  drawDetails(currentRound);
+
+  fill(158, 206, 232);
+  textSize(15);
+  text("Use LEFT / RIGHT arrow keys to browse the recorded rounds.", 48, 662);
+}
+
+void drawStat(String label, String value, float x) {
+  noStroke();
+  fill(21, 52, 79);
+  rect(x, 125, 277, 98, 14);
+  fill(149, 195, 221);
+  textSize(13);
+  text(label, x + 17, 152);
+  fill(236, 249, 255);
+  textSize(34);
+  text(value, x + 17, 200);
+}
+
+void drawSnowflake(int index) {
+  TableRow item = rounds.getRow(index);
+  color lineColour = colourForResult(item.getString("result"));
+  stroke(lineColour);
+  strokeWeight(3);
+  noFill();
+
+  // Six matching branches, each with small forked ends.
+  for (int branch = 0; branch < 6; branch++) {
+    pushMatrix();
+    rotate(branch * TWO_PI / 6.0);
+    line(0, 0, 0, -132);
+    for (int fork = 1; fork <= 4; fork++) {
+      float y = -fork * 27;
+      line(0, y, -16, y - 18);
+      line(0, y, 16, y - 18);
+    }
+    popMatrix();
+  }
+
+  noStroke();
+  fill(226, 245, 255);
+  circle(0, 0, 15);
+}
+
+void drawDetails(int index) {
+  TableRow item = rounds.getRow(index);
+  float x = 610;
+  float y = 293;
+  noStroke();
+  fill(21, 52, 79, 245);
+  rect(575, 257, 480, 355, 18);
+  fill(235, 249, 255);
+  textSize(23);
+  text("Round " + item.getInt("observation") + " of " + rounds.getRowCount(), x, y);
+
+  String[] names = {"Date", "Map", "Agent", "Result", "Kills / deaths", "Music", "Mood before / after"};
+  String[] values = {
+    item.getString("date"),
+    item.getString("map"),
+    item.getString("agent"),
+    item.getString("result"),
+    item.getString("kills") + " / " + item.getString("deaths"),
+    item.getString("musicPlaying") + " — " + item.getString("musicGenre"),
+    item.getString("moodBefore") + " / " + item.getString("moodAfter")
+  };
+
+  for (int i = 0; i < names.length; i++) {
+    fill(151, 201, 229);
+    textSize(14);
+    text(names[i], x, y + 43 + i * 39);
+    fill(242, 250, 255);
+    text(values[i], x + 190, y + 43 + i * 39);
+  }
+}
+
+void keyPressed() {
+  if (rounds == null || rounds.getRowCount() == 0) return;
+
+  if (keyCode == RIGHT) {
+    currentRound = (currentRound + 1) % rounds.getRowCount();
+  } else if (keyCode == LEFT) {
+    currentRound = (currentRound - 1 + rounds.getRowCount()) % rounds.getRowCount();
+  }
+}
