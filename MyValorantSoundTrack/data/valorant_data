@@ -89,3 +89,14 @@ observation,date,map,agent,result,kills,deaths,musicPlaying,musicGenre,musicEner
 88,2026-10-12,Lotus,Reyna,Win,4,0,Yes,Indie,3,1,2,No,None,3
 89,2026-10-12,Lotus,Reyna,Win,1,1,No,None,0,2,3,Yes,None,3
 90,2026-10-12,Lotus,Reyna,Win,2,1,Yes,Indie,4,3,4,Yes,None,3
+91,2026-10-12,Lotus,Reyna,Win,3,1,Yes,Indie,2,4,5,No,Neutral,3
+92,2026-10-12,Lotus,Reyna,Loss,1,1,Yes,Indie,4,5,4,Yes,None,3
+93,2026-10-12,Lotus,Reyna,Loss,1,1,No,None,0,4,3,No,Neutral,3
+94,2026-10-12,Lotus,Reyna,Win,2,1,No,None,0,3,4,Yes,Neutral,3
+95,2026-10-12,Lotus,Reyna,Win,1,0,Yes,Indie,5,4,5,No,None,3
+96,2026-10-12,Lotus,Reyna,Loss,1,1,Yes,Pop,5,5,4,Yes,Neutral,3
+97,2026-10-12,Lotus,Reyna,Win,1,1,Yes,Pop,5,4,5,No,None,3
+98,2026-10-12,Lotus,Reyna,Loss,1,1,No,None,0,5,4,No,Neutral,3
+99,2026-10-12,Lotus,Reyna,Loss,1,1,Yes,Pop,5,4,3,No,Neutral,3
+100,2026-10-12,Lotus,Reyna,Win,2,1,Yes,Pop,3,3,4,Yes,None,3
+
