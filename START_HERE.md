@@ -15,7 +15,7 @@ Make meaningful commits as the project develops, for example:
 ## Part 1 Target 
 Try to complete before the first progress check-in:
 - Working sketch that loads up
-- 25+ observations ideally so data criterion can be fully evidenced
+- 70+ observations ideally so data criterion can be fully evidenced
 - I am able to explain what a method is
 - I am able to write/explain a short method returning a value
 - Make GitHub commits on different days as consistently as possible
