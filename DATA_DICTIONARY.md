@@ -20,4 +20,4 @@
 | interaction | Rating the interaction | None / Neutral / Positive / Negative |
 | socialExperience | My rating of the overall social experience | 1-5 |
 
-![Uploading data_preview.png…]()
+
