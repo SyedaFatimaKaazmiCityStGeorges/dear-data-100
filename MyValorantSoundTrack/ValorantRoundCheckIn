@@ -1,184 +1,215 @@
-// Dear Data 100 — Part 1 progress check
-// One record represents one round of Valorant.
-// The sketch reads a CSV and displays an early snowflake concept.
+/*
+  Dear Data 100 - Valorant Rounds
+  Creative Coding - Part 1
 
-Table rounds;
-int currentRound = 0;
-int winCount = 0;
-float averageMoodChange = 0;
-String errorMessage = "";
+  I'm collecting information from 100 Valorant rounds.
+  Each row in my CSV represents one round.
 
-void settings() {
-  size(1100, 700);
-}
+  My first idea was to use circles, then I tried
+  flowers realised it was basic and being done by other students,
+  and now I'm testing out snowflakes for my visualisation.
+
+  This is my early version of the snowflake idea.
+*/
+
+// Variables that I need throughout the sketch
+Table rounds;              // Stores my CSV data
+int currentRound = 0;      // Which round I'm looking at
+int totalWins = 0;         // Number of rounds won
+float averageMoodChange = 0; // Average change in mood
+
 
 void setup() {
-  surface.setTitle("Dear Data 100 | Valorant Round Log");
-  textFont(createFont("SansSerif", 16));
-  loadObservations();
-}
+  size(1050, 680);  // Size of my sketch window
 
-void loadObservations() {
+  // Load the CSV file from the data folder
+  // "header" means the first row contains column names
   rounds = loadTable("valorant_rounds_001-100.csv", "header");
 
-  if (rounds == null || rounds.getRowCount() == 0) {
-    errorMessage = "Could not load the CSV in the data folder.";
-    return;
+  // Only calculate the results if my data has loaded
+  if (rounds != null && rounds.getRowCount() > 0) {
+    totalWins = countWins(rounds);
+    averageMoodChange = findAverageMoodChange(rounds);
   }
-
-  winCount = countWins(rounds);
-  averageMoodChange = calculateAverageMoodChange(rounds);
 }
 
-// A METHOD THAT RETURNS AN INTEGER.
-// It accepts a Table counts its winning rows then returns the answer.
-int countWins(Table source) {
-  int total = 0;
 
-  for (TableRow row : source.rows()) {
+// This method counts how many rounds I won
+// It returns an integer because wins are whole numbers
+int countWins(Table data) {
+  int wins = 0;
+
+  // Go through every row in the CSV
+  for (TableRow row : data.rows()) {
+
+    // Check whether the result says Win
     if (row.getString("result").equalsIgnoreCase("Win")) {
-      total++;
+      wins = wins + 1;
     }
   }
 
-  return total;
+  return wins;  // Send the total back to setup()
 }
 
-// A METHOD THAT RETURNS A FLOAT.
-float calculateAverageMoodChange(Table source) {
-  float totalChange = 0;
 
-  for (TableRow row : source.rows()) {
-    totalChange += row.getInt("moodAfter") - row.getInt("moodBefore");
+// This method works out my average mood change
+// I use float because the average might be a decimal
+float findAverageMoodChange(Table data) {
+  float total = 0;
+
+  for (TableRow row : data.rows()) {
+    int before = row.getInt("moodBefore");
+    int after = row.getInt("moodAfter");
+
+    // Find the difference between the two moods
+    total = total + (after - before);
   }
 
-  return totalChange / source.getRowCount();
+  return total / data.getRowCount();
 }
 
-// A METHOD THAT RETURNS A COLOUR.
-color colourForResult(String result) {
-  if (result.equalsIgnoreCase("Win")) {
-    return color(111, 220, 195);
-  }
-  return color(255, 170, 180);
-}
 
 void draw() {
-  background(12, 29, 50);
+  background(15, 30, 50);  // Dark blue background
 
-  // Background stars; purely decorative and repeatable across frames.
-  randomSeed(100);
-  noStroke();
-  for (int i = 0; i < 95; i++) {
-    fill(188, 220, 242, random(60, 190));
-    circle(random(width), random(height), random(1.2, 3));
-  }
+  fill(235, 245, 255);
+  textSize(30);
+  text("Dear Data 100 - Valorant", 40, 60);
 
-  fill(236, 248, 255);
-  textSize(32);
-  text("Dear Data 100  /  Valorant Round Log", 48, 65);
-  fill(159, 202, 225);
   textSize(16);
-  text("PART 1: DATA COLLECTION + FIRST VISUAL IDEA", 49, 97);
+  text("My first snowflake visualisation", 40, 95);
 
-  if (!errorMessage.equals("")) {
-    fill(255, 179, 182);
-    text(errorMessage, 48, 160);
+  // Show a message if the CSV could not be loaded
+  if (rounds == null || rounds.getRowCount() == 0) {
+    fill(255, 150, 150);
+    text("CSV file not found. Check the data folder.", 40, 160);
     return;
   }
 
-  // Three easy-to-read summary numbers.
-  drawStat("ROUNDS COLLECTED", str(rounds.getRowCount()), 48);
-  drawStat("WINS", str(winCount), 355);
-  drawStat("AVERAGE MOOD CHANGE", nf(averageMoodChange, 1, 2), 662);
+  // Show some basic information about my data
+  fill(185, 215, 235);
+  textSize(18);
 
-  // Snowflake = a first concept, not the final assessed visualisation.
-  pushMatrix();
-  translate(300, 430);
-  drawSnowflake(currentRound);
-  popMatrix();
+  text("Rounds collected: " + rounds.getRowCount(), 40, 155);
+  text("Rounds won: " + totalWins, 40, 185);
+  text("Average mood change: "
+    + nf(averageMoodChange, 1, 2), 40, 215);
 
-  drawDetails(currentRound);
+  // Get the current row from the CSV
+  TableRow selected = rounds.getRow(currentRound);
 
-  fill(158, 206, 232);
+  // Draw the snowflake and show its information
+  drawSnowflake(selected);
+  showRoundDetails(selected);
+
+  fill(180, 210, 230);
   textSize(15);
-  text("Use LEFT / RIGHT arrow keys to browse the recorded rounds.", 48, 662);
+  text("Use the LEFT and RIGHT arrow keys to change rounds.", 40, 640);
 }
 
-void drawStat(String label, String value, float x) {
-  noStroke();
-  fill(21, 52, 79);
-  rect(x, 125, 277, 98, 14);
-  fill(149, 195, 221);
-  textSize(13);
-  text(label, x + 17, 152);
-  fill(236, 249, 255);
-  textSize(34);
-  text(value, x + 17, 200);
-}
 
-void drawSnowflake(int index) {
-  TableRow item = rounds.getRow(index);
-  color lineColour = colourForResult(item.getString("result"));
-  stroke(lineColour);
+// Draw one snowflake for the selected round
+void drawSnowflake(TableRow row) {
+
+  // Move the drawing position to the left side
+  pushMatrix();
+  translate(310, 420);
+
+  String result = row.getString("result");
+
+  // Different colours depending on winning or losing
+  if (result.equalsIgnoreCase("Win")) {
+    stroke(110, 220, 195); // Green for a win
+  } else {
+    stroke(255, 165, 180); // Pink for a loss
+  }
+
   strokeWeight(3);
-  noFill();
 
-  // Six matching branches, each with small forked ends.
-  for (int branch = 0; branch < 6; branch++) {
+  // A snowflake has six main branches
+  for (int i = 0; i < 6; i++) {
     pushMatrix();
-    rotate(branch * TWO_PI / 6.0);
-    line(0, 0, 0, -132);
-    for (int fork = 1; fork <= 4; fork++) {
-      float y = -fork * 27;
+
+    // Rotate each branch around the middle
+    rotate(i * TWO_PI / 6);
+
+    // Main snowflake branch
+    line(0, 0, 0, -130);
+
+    // Add four smaller branches to each main branch
+    for (int j = 1; j <= 4; j++) {
+      float y = -j * 27;
+
       line(0, y, -16, y - 18);
       line(0, y, 16, y - 18);
     }
+
     popMatrix();
   }
 
+  // Small circle in the centre
   noStroke();
-  fill(226, 245, 255);
+  fill(230, 245, 255);
   circle(0, 0, 15);
+
+  popMatrix();
 }
 
-void drawDetails(int index) {
-  TableRow item = rounds.getRow(index);
-  float x = 610;
-  float y = 293;
+
+// Display the information for the selected round
+void showRoundDetails(TableRow row) {
+
+  fill(25, 50, 75);
   noStroke();
-  fill(21, 52, 79, 245);
-  rect(575, 257, 480, 355, 18);
-  fill(235, 249, 255);
-  textSize(23);
-  text("Round " + item.getInt("observation") + " of " + rounds.getRowCount(), x, y);
+  rect(590, 250, 410, 350, 12);
 
-  String[] names = {"Date", "Map", "Agent", "Result", "Kills / deaths", "Music", "Mood before / after"};
-  String[] values = {
-    item.getString("date"),
-    item.getString("map"),
-    item.getString("agent"),
-    item.getString("result"),
-    item.getString("kills") + " / " + item.getString("deaths"),
-    item.getString("musicPlaying") + " — " + item.getString("musicGenre"),
-    item.getString("moodBefore") + " / " + item.getString("moodAfter")
-  };
+  fill(235, 245, 255);
+  textSize(24);
 
-  for (int i = 0; i < names.length; i++) {
-    fill(151, 201, 229);
-    textSize(14);
-    text(names[i], x, y + 43 + i * 39);
-    fill(242, 250, 255);
-    text(values[i], x + 190, y + 43 + i * 39);
-  }
+  text("Round " + row.getInt("observation"), 615, 290);
+
+  textSize(17);
+
+  text("Date: " + row.getString("date"), 615, 335);
+  text("Map: " + row.getString("map"), 615, 370);
+  text("Agent: " + row.getString("agent"), 615, 405);
+  text("Result: " + row.getString("result"), 615, 440);
+
+  text("Kills: " + row.getInt("kills")
+    + "    Deaths: " + row.getInt("deaths"), 615, 475);
+
+  text("Music: " + row.getString("musicPlaying"), 615, 510);
+  text("Genre: " + row.getString("musicGenre"), 615, 545);
+
+  text("Mood: " + row.getInt("moodBefore")
+    + " to " + row.getInt("moodAfter"), 615, 580);
 }
 
-void keyPressed() {
-  if (rounds == null || rounds.getRowCount() == 0) return;
 
+// This runs when I press a key on my keyboard
+void keyPressed() {
+
+  if (rounds == null || rounds.getRowCount() == 0) {
+    return;
+  }
+
+  // Move to the next round
   if (keyCode == RIGHT) {
-    currentRound = (currentRound + 1) % rounds.getRowCount();
-  } else if (keyCode == LEFT) {
-    currentRound = (currentRound - 1 + rounds.getRowCount()) % rounds.getRowCount();
+    currentRound++;
+
+    // Go back to the first round after the last one
+    if (currentRound >= rounds.getRowCount()) {
+      currentRound = 0;
+    }
+  }
+
+  // Move to the previous round
+  if (keyCode == LEFT) {
+    currentRound--;
+
+    // Go to the last round if I move before round 1
+    if (currentRound < 0) {
+      currentRound = rounds.getRowCount() - 1;
+    }
   }
 }
