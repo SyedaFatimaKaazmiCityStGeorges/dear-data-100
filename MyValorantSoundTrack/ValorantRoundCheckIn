@@ -1,4 +1,7 @@
-## Dear Data Snowflake design ##
+// Dear Data 100 — Part 1 progress check
+// One record represents one round of Valorant.
+// The sketch reads a CSV and displays an early snowflake concept.
+
 Table rounds;
 int currentRound = 0;
 int winCount = 0;
@@ -16,7 +19,6 @@ void setup() {
 }
 
 void loadObservations() {
-  // Put the file inside this sketch's data folder.
   rounds = loadTable("valorant_rounds_001-100.csv", "header");
 
   if (rounds == null || rounds.getRowCount() == 0) {
@@ -29,7 +31,7 @@ void loadObservations() {
 }
 
 // A METHOD THAT RETURNS AN INTEGER.
-// It accepts a Table, counts its winning rows, then returns the answer.
+// It accepts a Table counts its winning rows then returns the answer.
 int countWins(Table source) {
   int total = 0;
 
