@@ -15,13 +15,13 @@ Make meaningful commits as the project develops, for example:
 ## Part 1 Target 
 Try to complete before the first progress check-in:
 - Working sketch that loads up
-- 70+ observations ideally so data criterion can be fully evidenced
+- 100+ observations ideally so data criterion can be fully evidenced
 - I am able to explain what a method is
 - I am able to write/explain a short method returning a value
 - Make GitHub commits on different days as consistently as possible
 
 ## Part 2 Target
-- 100+ observations collected successfully
-- At least 100 of those observations show up on the sketch
+- 400+ observations collected successfully
+- At least 200 of those observations show up on the sketch
 - The Class + Objects completed (these display the observations)
 - Justify my creative decisions using SCAMPER
