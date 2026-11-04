@@ -6,7 +6,7 @@ This repository was made for my IN1007 Creative Coding project **Dear Data 100**
 **The Research Question**
 > This is what I ended up asking myself. How do music, performance, and my social interactions shape my overall experience playing Valorant as a woman?
 
-The project will depict a dataset that I collect over time from my own Valorant games. **One Valorant round is ONE observation.** The final Processing sketch will show those 100 data observations.
+The project will depict a dataset that I collect over time from my own Valorant games. **One Valorant round is ONE observation.** The final Processing sketch will show those 100+ data observations.
 
 ## What am I really collecting in these observations?
 For each round, I plan to record a small set of variables covering:
