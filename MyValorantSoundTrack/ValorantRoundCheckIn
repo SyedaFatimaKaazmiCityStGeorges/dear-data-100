@@ -2,104 +2,88 @@
   Dear Data 100 - Valorant Rounds
   Creative Coding - Part 1
 
-  I'm collecting information from 100 Valorant rounds.
-  Each row in my CSV represents one round.
+  This sketch reads my CSV file of 100 Valorant rounds.
+  Each row is one round.
 
-  My first idea was to use circles, then I tried
-  flowers realised it was basic and being done by other students,
-  and now I'm testing out snowflakes for my visualisation.
-
-  This is my early version of the snowflake idea.
+  My first visual idea was to use circles.
+  This version shows an early circle concept.
 */
 
-// Variables that I need throughout the sketch
-Table rounds;              // Stores my CSV data
-int currentRound = 0;      // Which round I'm looking at
-int totalWins = 0;         // Number of rounds won
-float averageMoodChange = 0; // Average change in mood
-
+Table rounds;                 
+int currentRound = 0;         
+int totalWins = 0;            
+float averageMoodChange = 0;  
 
 void setup() {
-  size(1050, 680);  // Size of my sketch window
+  size(1050, 680);
 
-  // Load the CSV file from the data folder
-  // "header" means the first row contains column names
+  // Load the CSV from the data folder
   rounds = loadTable("valorant_rounds_001-100.csv", "header");
 
-  // Only calculate the results if my data has loaded
+  // Only do calculations if the file loaded properly
   if (rounds != null && rounds.getRowCount() > 0) {
     totalWins = countWins(rounds);
     averageMoodChange = findAverageMoodChange(rounds);
   }
 }
 
-
-// This method counts how many rounds I won
-// It returns an integer because wins are whole numbers
+// Counts how many rows have "Win" in the result column
 int countWins(Table data) {
   int wins = 0;
 
-  // Go through every row in the CSV
   for (TableRow row : data.rows()) {
-
-    // Check whether the result says Win
     if (row.getString("result").equalsIgnoreCase("Win")) {
-      wins = wins + 1;
+      wins++;
     }
   }
 
-  return wins;  // Send the total back to setup()
+  return wins;
 }
 
-
-// This method works out my average mood change
-// I use float because the average might be a decimal
+// Works out the average mood change across all rounds
 float findAverageMoodChange(Table data) {
   float total = 0;
 
   for (TableRow row : data.rows()) {
     int before = row.getInt("moodBefore");
     int after = row.getInt("moodAfter");
-
-    // Find the difference between the two moods
-    total = total + (after - before);
+    total += (after - before);
   }
 
   return total / data.getRowCount();
 }
 
-
 void draw() {
-  background(15, 30, 50);  // Dark blue background
+  background(15, 30, 50);
 
   fill(235, 245, 255);
   textSize(30);
   text("Dear Data 100 - Valorant", 40, 60);
 
   textSize(16);
-  text("My first snowflake visualisation", 40, 95);
+  text("My first visual idea: circles", 40, 95);
 
-  // Show a message if the CSV could not be loaded
+  // If the file didn't load, show a message
   if (rounds == null || rounds.getRowCount() == 0) {
     fill(255, 150, 150);
     text("CSV file not found. Check the data folder.", 40, 160);
     return;
   }
 
-  // Show some basic information about my data
+  // Summary information
   fill(185, 215, 235);
   textSize(18);
-
   text("Rounds collected: " + rounds.getRowCount(), 40, 155);
   text("Rounds won: " + totalWins, 40, 185);
-  text("Average mood change: "
-    + nf(averageMoodChange, 1, 2), 40, 215);
+  text("Average mood change: " + nf(averageMoodChange, 1, 2), 40, 215);
 
-  // Get the current row from the CSV
+  // Get the currently selected row
   TableRow selected = rounds.getRow(currentRound);
 
-  // Draw the snowflake and show its information
-  drawSnowflake(selected);
+  // Draw the circle visual
+  drawCircleIdea(selected);
+
+  // Show the data values on the right
   showRoundDetails(selected);
 
   fill(180, 210, 230);
@@ -107,69 +91,69 @@ void draw() {
   text("Use the LEFT and RIGHT arrow keys to change rounds.", 40, 640);
 }
 
-
-// Draw one snowflake for the selected round
-void drawSnowflake(TableRow row) {
-
-  // Move the drawing position to the left side
+// Draws my first idea using circles
+void drawCircleIdea(TableRow row) {
   pushMatrix();
   translate(310, 420);
 
+  int kills = row.getInt("kills");
+  int deaths = row.getInt("deaths");
+  int moodBefore = row.getInt("moodBefore");
+  int moodAfter = row.getInt("moodAfter");
   String result = row.getString("result");
 
-  // Different colours depending on winning or losing
-  if (result.equalsIgnoreCase("Win")) {
-    stroke(110, 220, 195); // Green for a win
-  } else {
-    stroke(255, 165, 180); // Pink for a loss
-  }
+  // Main circle size is based on kills
+  float mainSize = 80 + kills * 18;
 
-  strokeWeight(3);
+  // Second circle size is based on deaths
+  float secondSize = 50 + deaths * 18;
 
-  // A snowflake has six main branches
-  for (int i = 0; i < 6; i++) {
-    pushMatrix();
+  // Mood change decides another circle size
+  float moodSize = 40 + abs(moodAfter - moodBefore) * 20;
 
-    // Rotate each branch around the middle
-    rotate(i * TWO_PI / 6);
-
-    // Main snowflake branch
-    line(0, 0, 0, -130);
-
-    // Add four smaller branches to each main branch
-    for (int j = 1; j <= 4; j++) {
-      float y = -j * 27;
-
-      line(0, y, -16, y - 18);
-      line(0, y, 16, y - 18);
-    }
-
-    popMatrix();
-  }
-
-  // Small circle in the centre
   noStroke();
-  fill(230, 245, 255);
-  circle(0, 0, 15);
+
+  // Result decides the main colour
+  if (result.equalsIgnoreCase("Win")) {
+    fill(110, 220, 195, 180);
+  } else {
+    fill(255, 165, 180, 180);
+  }
+  ellipse(0, 0, mainSize, mainSize);
+
+  // Deaths circle
+  fill(170, 210, 255, 170);
+  ellipse(-55, 40, secondSize, secondSize);
+
+  // Mood change circle
+  fill(255, 230, 150, 170);
+  ellipse(60, -35, moodSize, moodSize);
+
+  // Small centre circle
+  fill(240, 245, 255);
+  ellipse(0, 0, 22, 22);
+
+  // Small labels near the circles
+  fill(235, 245, 255);
+  textSize(14);
+  text("kills", -18, -mainSize/2 - 12);
+  text("deaths", -88, 95);
+  text("mood", 45, -70);
 
   popMatrix();
 }
 
-
-// Display the information for the selected round
+// Shows the round information in text form
 void showRoundDetails(TableRow row) {
-
   fill(25, 50, 75);
   noStroke();
   rect(590, 250, 410, 350, 12);
 
   fill(235, 245, 255);
   textSize(24);
-
   text("Round " + row.getInt("observation"), 615, 290);
 
   textSize(17);
-
   text("Date: " + row.getString("date"), 615, 335);
   text("Map: " + row.getString("map"), 615, 370);
   text("Agent: " + row.getString("agent"), 615, 405);
@@ -185,29 +169,21 @@ void showRoundDetails(TableRow row) {
     + " to " + row.getInt("moodAfter"), 615, 580);
 }
 
-
-// This runs when I press a key on my keyboard
+// Lets me browse through rounds with the keyboard
 void keyPressed() {
-
   if (rounds == null || rounds.getRowCount() == 0) {
     return;
   }
 
-  // Move to the next round
   if (keyCode == RIGHT) {
     currentRound++;
-
-    // Go back to the first round after the last one
     if (currentRound >= rounds.getRowCount()) {
       currentRound = 0;
     }
   }
 
-  // Move to the previous round
   if (keyCode == LEFT) {
     currentRound--;
-
-    // Go to the last round if I move before round 1
     if (currentRound < 0) {
       currentRound = rounds.getRowCount() - 1;
     }
